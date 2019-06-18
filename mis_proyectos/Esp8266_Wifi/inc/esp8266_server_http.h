@@ -17,7 +17,8 @@ typedef struct {
 
 typedef enum {
 	COMMAND_AT, COMMAND_TEST_AT,
-	COMMAND_TEST_AT_FAIL
+	COMMAND_TEST_AT_FAIL,
+	FORM
 } comandAT_t;
 
 
@@ -58,8 +59,9 @@ void esp8266ReturnSofAPIP(esp8266_t * espWifi);
 bool_t esp8266CheckConnections(void);
 //est función verifica el status del modulo WIFI
 void esp8266CheckStatus(esp8266_t * espWifi);//AT+CIPSTATUS
+void esp8266SendData(void);//AT+CIPSEND=0,30
 //esta función asigna un id la conexión
-void esp8266Sendform(esp8266_t * espWifi);
+void esp8266SendForm(void);
 //Esta función establece el modulo WIFI de fabrica
 void esp8266Restore(esp8266_t * espWifi);
 //esta función envía comandos AT al módulo

@@ -24,11 +24,17 @@ char send_AT_SET_MODE_With_FAIL[] = "CWMODE'=3";
 char send_AT_AS_SERVER_AND_OPEN_PORT[] = "CIPSERVER=1,80";
 //comando que devuelve las conexiones
 char send_AT_TCP_UDP_CONNECTIONS_STATUS[] = "CIPSTATUS";
+//envio el id conection y la cantidad de caracteres
+char send_AT_SEND_DATA[]="CIPSEND=0,30";
 //este comando restaura los valores del modulo de fabrica
 char send_AT_TCP_RESTORE[]="RESTORE";
+char send_FORM_A[] ="<h1>TEC1 : PRESIONADA</h1>";
+char send_FORM_B[] ="<h1>TEC1 : NO PRESIONADA</h1>";
+char send_CONNECTION_CLOSED_0[]="CIPCLOSE=0";
+char send_CONNECTION_CLOSED_1[]="CIPCLOSE=1";
 
-char responseWait[SIZE_RESPONSE_WAIT];
-uint32_t responseWaitSize = SIZE_RESPONSE_WAIT;
+//char responseWait[SIZE_RESPONSE_WAIT];
+//uint32_t responseWaitSize = SIZE_RESPONSE_WAIT;
 
 void esp8266Init(esp8266_t * espWifi, gpioMap_t pinVcc,
 		bool_t isConectedToNetworkWifi, bool_t isOn, bool_t IsConnectionAT,
@@ -235,12 +241,13 @@ bool_t esp8266CheckConnections(){
 
 		 "+IPD", strlen("+IPD"), 3000);
 		 if (valueResponse) {
-		 printf("Vino una solicitud\n\r");
-		 i++;
-		 if(idConnection>4){
-
-		 } else {
+			 printf("Vino una solicitud\n\r");
+			 idConnection=0;
+			 esp8266SendData();
+		 }
+		else {
 		 //printf("No hay Conexiones pendiente\n\r");
+
 		 }
     return valueResponse;
 }
@@ -249,6 +256,29 @@ void esp8266CheckStatus(esp8266_t * espWifi){
 			esp8266SendCommandAT(send_AT_TCP_UDP_CONNECTIONS_STATUS, COMMAND_AT);
 
 }
+void esp8266SendData(){
+	bool_t valueResponse;
+
+		esp8266SendCommandAT(send_AT_SEND_DATA, COMMAND_AT);
+			valueResponse = waitForReceiveStringOrTimeoutBlocking( UART_ESP8266,
+
+			 "SEND OK", strlen("SEND OK"), 3000);
+			if(valueResponse){
+				esp8266SendForm();
+			}
+}
+void esp8266SendForm(){
+	if(gpioRead(TEC1)){
+	esp8266SendCommandAT(send_FORM_B, FORM);
+
+	}
+	else{
+		esp8266SendCommandAT(send_FORM_A, FORM);
+	}
+	esp8266SendCommandAT(send_CONNECTION_CLOSED_0, COMMAND_AT);
+	esp8266SendCommandAT(send_CONNECTION_CLOSED_1, COMMAND_AT);
+}
+
 
 void esp8266Restore(esp8266_t * espWifi) {
 	bool_t valueResponse;
@@ -295,6 +325,14 @@ void esp8266SendCommandAT(char *command, comandAT_t test) {
 		uartWriteByte( UART_ESP8266, le);
 
 		break;
+	case FORM:
+		while (*command != '\0') {
+					uartWriteByte( UART_ESP8266, *command);
+					command++;
+				}
+			uartWriteByte( UART_ESP8266, cr);
+			uartWriteByte( UART_ESP8266, le);
+				break;
 
 	}
 

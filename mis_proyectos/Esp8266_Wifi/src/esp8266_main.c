@@ -138,7 +138,7 @@ while(TRUE){
 	esp8266ReadUartUSB();//verifica si hay datos por el puerto UART USB
 	//esp8266ReadUartEsp8266();
 	if(delayRead(&dalayReceiveResponse)){
-		esp8266CheckConnectionsFSM();
+		esp8266CheckConnections();
 	}
 
 
