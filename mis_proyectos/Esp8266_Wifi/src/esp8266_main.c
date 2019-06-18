@@ -117,47 +117,7 @@ char HttpWebPageBody [200];
 /*==================[external data definition]===============================*/
 
 /*==================[internal functions definition]==========================*/
-/*void Esp8266_sendCommandAT(char *command){
-uint8_t cr=0x0D;
-uint8_t le= 0x0A;
-     while(*command!='\0'){
-    	 uartWriteByte( UART_ESP8266, *command );
-         command++;
-      }
-     uartWriteByte( UART_ESP8266, cr );
-     uartWriteByte( UART_ESP8266, le );
-}*/
-/*
-void Esp8266_receiveResponseAT() {
 
-	uint8_t rxData;
-	uint16_t i = 0;
-	bool_t timeOut;
-	delay_t dalayReceiveResponse;
-
-	delayConfig(&dalayReceiveResponse, 2000);
-
-	while (TRUE) {
-		if (!delayRead(&dalayReceiveResponse)) {
-			if (uartReadByte(UART_232, &rxData)) {
-				responseWait[i] = rxData;
-      				delayInaccurateUs(51); //50
-				i++;
-			} else {
-				responseWait[i] = '\0'; // recibo toda la respuesta
-				break; //salgo antes del timeOut
-			}
-
-		} else {
-			break; //TIMEOUT
-		}
-	}
-	//timeOut = delayRead(&dalayReceiveResponse);
-
-	i = 0;
-
-}
-*/
 
 /*==================[external functions definition]==========================*/
 
@@ -170,57 +130,29 @@ uartConfig(UART_USB,115200);
 uartConfig(UART_232,115200);
 
 gpioConfig(GPIO0,GPIO_OUTPUT);
-
+delay_t dalayReceiveResponse;
 uint8_t dato;
 
-
-//bool_t valueResponse = FALSE;
-
-//Esp8266_sendCommandAT(send_AT_LISTA_ACCESS_POINT);
-//delay(4);
-//Esp8266_receiveResponseAT();
-
-/*valueResponse = waitForReceiveStringOrTimeoutBlocking( UART_ESP8266,
-
-                                                 "STAIPMARIANO,", strlen("STAIPMARIANO"),
-                                                 1000 );
-*/
-/*valueResponse = receiveBytesUntilReceiveStringOrTimeoutBlocking(
-               UART_ESP8266,
-               "WIFI-Arnet-32",13 ,
-               responseWait, &responseWaitSize,
-               10000
-            );
-*/
-/*
-if(valueResponse ){
-	printf("RED WIFI IDENTIFICADA \r\n");
-
-}
-else{
-	printf("RED WIFI NO IDENTIFICADA\r\n");
-}
-*/
-//printf("valor de ValueResponse\r\n:%c",valueResponse);
-
-//delayConfig(&waitResponseAT,5000);
+delayConfig(&dalayReceiveResponse, 500);// cada 1 segundo monitoreo si hay solicitud de clientes
 while(TRUE){
-	esp8266ReadUartUSB();
-	//Esp8266_sendCommandAT(send_AT_CHECKIP);
-	//delay(4);
-	//Esp8266_receiveResponseAT();
+	esp8266ReadUartUSB();//verifica si hay datos por el puerto UART USB
+	//esp8266ReadUartEsp8266();
+	if(delayRead(&dalayReceiveResponse)){
+		esp8266CheckConnectionsFSM();
+	}
+
 
 	/* Si recibe un byte de la UART_USB lo guardarlo en la variable dato. */
-	   //if( uartReadByte( UART_USB, &dato ) ){
+	//if( uartReadByte( UART_USB, &dato ) ){
 	         /* Se reenvía el dato a la UART_232 realizando un puente entre ambas */
-	    //   uartWriteByte( UART_232, dato );
-	     // }
+	  //    uartWriteByte( UART_232, dato );
+	    //}
 
 	/* Si recibe un byte de la UART_232 lo guardarlo en la variable dato. */
-	    //   if( uartReadByte( UART_ESP8266, &dato ) ){
+	     if( uartReadByte( UART_ESP8266, &dato ) ){
 	         /* Se reenvía el dato a la UART_USB realizando un puente entre ambas */
-	      //   uartWriteByte( UART_USB, dato );
-	       //}
+	        uartWriteByte( UART_USB, dato );
+	      }
 
 
 
