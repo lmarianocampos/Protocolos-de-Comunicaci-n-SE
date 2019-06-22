@@ -15,15 +15,15 @@ if(uartReadByte( UART_USB, &rxData ))
 	case 'A':
 		esp8266Init(&esp8266Wifi, GPIO0,
 			FALSE, FALSE, FALSE,
-			networkSsid, networkPassword);
+			networkSsid, networkPassword,WAIT_QUERY);
 		break;
 	case 'B':
 		     connection = esp8266TestAT(&esp8266Wifi);
 		     if(connection == TRUE){
-		    	 printf("Conexion establecida con el Modulo WIFI\n\r");
+		    	 printf("Conexion establecida entre la placa y el Modulo WIFI\n\r");
 		     }
 		     else{
-		    	 printf("NO se establecio la comunicacion con el Modulo WIFI\n\r");
+		    	 printf("NO se establecio la comunicacion entre la placa y el Modulo WIFI\n\r");
 		     }
 		break;
 	case 'C': esp8266SetMode(&esp8266Wifi);
@@ -40,10 +40,10 @@ if(uartReadByte( UART_USB, &rxData ))
 	break;
 	case 'H':isConnected=esp8266IsConected(&esp8266Wifi);
 	 if(isConnected == TRUE){
-			    	 printf("El Modulo WIFI no esta conectado \n\r");
+			    	 printf("El Modulo WIFI no esta conectado a la red local\n\r");
 			     }
 			     else{
-			    	 printf("El Modulo WIFI  esta conectado\n\r");
+			    	 printf("El Modulo WIFI  esta conectado a la red local\n\r");
 			     }
 	 	 break;
 	case 'I':esp8266ReturnSofAPIP(&esp8266Wifi);
@@ -53,26 +53,19 @@ if(uartReadByte( UART_USB, &rxData ))
 	case 'K':esp8266OpenPortAndEnableServer(&esp8266Wifi);//AT+CIPSERVER=1,80
              break;
 	case 'L':esp8266CheckStatus(&esp8266Wifi);
+	break;
+	case 'M':esp8266SetOn(&esp8266Wifi);
 			break;
+	case 'N':esp8266SetOff(&esp8266Wifi);
+	break;
+
 	case 'Z':esp8266Restore(&esp8266Wifi);//AT+RESTORE pone al modulo wifi de fabrica
 	         break;
+
     	}
 }
 }
-
-void esp8266ReadUartEsp8266(void){
-	uint8_t rxData;
-	bool_t valueResponse;
-	if(uartReadByte( UART_ESP8266, &rxData )){
-	valueResponse = waitForReceiveStringOrTimeoutBlocking( UART_ESP8266,
-
-		"IPD,", strlen("IPD,"), 2000);
-	}
- if(valueResponse && rxData=='+'){
-	 printf("Se recibio una solicitud\n\r");
- }
-	else{
-		//printf("No se recibio una solicitud\n\r");
-	}
-
+void esp8266CheckConnections(){
+	esp8266CheckConnectionsFSM(&esp8266Wifi);
 }
+

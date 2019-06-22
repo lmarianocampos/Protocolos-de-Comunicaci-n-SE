@@ -1,8 +1,8 @@
 #include "sapi.h"
 #include <string.h>
 
-#define UART_PC UART_USB
-#define UART_BLUETOOTH UART_232
+#define UART_PC 		UART_USB
+#define UART_BLUETOOTH  UART_232
 
 bool_t hm10BleTest(int32_t uart);
 void hm10BlePrintATCommands(int32_t uart);
@@ -12,6 +12,7 @@ void hm10BlePrintATCommands(int32_t uart);
 	uartConfig(UART_PC, 9600);
 	uartWriteString(UART_PC, "Programa Ejecutandose.\n\r");
 	uartWriteString(UART_PC, "UART_PC Configurada.\n\r");
+
 	gpioWrite(LEDB, OFF);
 	uartConfig(UART_BLUETOOTH, 9600);
 	uartWriteString(UART_PC,
@@ -46,12 +47,12 @@ void hm10BlePrintATCommands(int32_t uart);
 		}
 		//si presiono la TEC3 enciende el led de la pantalla de la app
 		if (!gpioRead(TEC3)) {
-			uartWriteString(UART_BLUETOOTH, "LED_ON\r\n");
+			uartWriteString(UART_PC, "LED_ON\r\n");
 			delay(500);
 		}
 		//si presiono TEC4 apaga el led de la pantalla de la app
 		if (!gpioRead(TEC4)) {
-			uartWriteString(UART_BLUETOOTH, "LED_OFF \r\n");
+			uartWriteString(UART_PC, "LED_OFF\r\n");
 			delay(500);
 		}
 

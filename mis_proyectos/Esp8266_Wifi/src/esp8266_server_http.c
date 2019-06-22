@@ -25,7 +25,9 @@ char send_AT_AS_SERVER_AND_OPEN_PORT[] = "CIPSERVER=1,80";
 //comando que devuelve las conexiones
 char send_AT_TCP_UDP_CONNECTIONS_STATUS[] = "CIPSTATUS";
 //envio el id conection y la cantidad de caracteres
-char send_AT_SEND_DATA[]="CIPSEND=0,30";
+char send_AT_SEND_DATA_ID_0[]="CIPSEND=0,28";
+//
+char send_AT_SEND_DATA_ID_1[]="CIPSEND=1,28";
 //este comando restaura los valores del modulo de fabrica
 char send_AT_TCP_RESTORE[]="RESTORE";
 char send_FORM_A[] ="<h1>TEC1 : PRESIONADA</h1>";
@@ -33,12 +35,10 @@ char send_FORM_B[] ="<h1>TEC1 : NO PRESIONADA</h1>";
 char send_CONNECTION_CLOSED_0[]="CIPCLOSE=0";
 char send_CONNECTION_CLOSED_1[]="CIPCLOSE=1";
 
-//char responseWait[SIZE_RESPONSE_WAIT];
-//uint32_t responseWaitSize = SIZE_RESPONSE_WAIT;
 
 void esp8266Init(esp8266_t * espWifi, gpioMap_t pinVcc,
 		bool_t isConectedToNetworkWifi, bool_t isOn, bool_t IsConnectionAT,
-		char * ssid, char * password) {
+		char * ssid, char * password,sendForm_t waitQuery) {
 
 	espWifi->pinVcc = pinVcc;
 	espWifi->isConnectedToNetworkWifi = isConectedToNetworkWifi;
@@ -46,20 +46,22 @@ void esp8266Init(esp8266_t * espWifi, gpioMap_t pinVcc,
 	espWifi->isConnectionAT = IsConnectionAT;
 	espWifi->ssid = ssid; //igualo los punteros. el puntero apunta a un string
 	espWifi->password = password;
-
+    espWifi->comunication=waitQuery;
 }
+delay_t pause;
 void esp8266SetOn(esp8266_t * espWifi) {
 
 	gpioWrite(espWifi->pinVcc, ON);
 	espWifi->isOn = TRUE;
+	printf("Modulo WIFI ENCENDIDO\n\r");
 
 }
 
-void esp8266Setoff(esp8266_t * espWifi) {
+void esp8266SetOff(esp8266_t * espWifi) {
 
 	gpioWrite(espWifi->pinVcc, LOW);
 	espWifi->isOn = FALSE;
-
+	printf("Se APAGO el Modulo WIFI \n\r");
 }
 
 bool_t esp8266IsOn(esp8266_t * espWifi) {
@@ -69,120 +71,133 @@ bool_t esp8266IsOn(esp8266_t * espWifi) {
 }
 bool_t esp8266TestAT(esp8266_t * espWifi) {
 
-	bool_t valueResponse;
+bool_t valueResponse;
+if(espWifi->isOn){
 
 	esp8266SendCommandAT(NULL, COMMAND_TEST_AT);
 	valueResponse = waitForReceiveStringOrTimeoutBlocking( UART_ESP8266,
 
 	"AT\r\r\n\r\nOK\r\n", strlen("AT\r\r\n\r\nOK\r\n"), 5000);
-	/*valueResponse = receiveBytesUntilReceiveStringOrTimeoutBlocking(
-	 UART_ESP8266,
-	 "AT\r\r\n\r\nOK\r\n",12,
-	 responseWait, &responseWaitSize,
-	 5000
-	 );*/
 	return valueResponse;
+}
+else{
+	printf("El Modulo WIFI Esta Apagado\r\n");
+
+}
+return valueResponse;
 }
 void esp8266TestATWithFail(esp8266_t *espWifi) {
 	bool_t valueResponse;
+	if (espWifi->isOn) {
+		esp8266SendCommandAT(NULL, COMMAND_TEST_AT_FAIL);
+		valueResponse = waitForReceiveStringOrTimeoutBlocking( UART_ESP8266,
 
-	esp8266SendCommandAT(NULL, COMMAND_TEST_AT_FAIL);
-	valueResponse = waitForReceiveStringOrTimeoutBlocking( UART_ESP8266,
-
-	"ERROR\r\n", strlen("ERROR\r\n"), 5000);
-	if (valueResponse) {
-		printf("El Comando AT FALLO\n\r");
-	} else {
-		printf("El Comando AT NO FALLO\n\r");
+		"ERROR\r\n", strlen("ERROR\r\n"), 5000);
+		if (valueResponse) {
+			printf("El Comando AT FALLO\n\r");
+		} else {
+			printf("El Comando AT NO FALLO\n\r");
+		}
 	}
-
+	else printf("El Modulo WIFI Esta Apagado\n\r");
 }
 void esp8266SetMode(esp8266_t * espWifi) {
 	bool_t valueResponse;
+	if (espWifi->isOn) {
+		esp8266SendCommandAT(send_AT_SET_MODE, COMMAND_AT);
+		valueResponse = waitForReceiveStringOrTimeoutBlocking( UART_ESP8266,
 
-	esp8266SendCommandAT(send_AT_SET_MODE, COMMAND_AT);
-	valueResponse = waitForReceiveStringOrTimeoutBlocking( UART_ESP8266,
+		"\r\nOK\r\n", strlen("\r\nOK\r\n"), 5000);
 
-	"\r\nOK\r\n", strlen("\r\nOK\r\n"), 5000);
-	/*	valueResponse = receiveBytesUntilReceiveStringOrTimeoutBlocking(
-	 UART_ESP8266,"\r\r\n\r\nOK\r\n",10, responseWait, &responseWaitSize, 5000);*/
-
-	if (valueResponse) {
-		printf("Modo establecido correctamente\n\r");
-	} else {
-		printf("No se pudo establecer el Modo Intentar nuevamente\n\r");
+		if (valueResponse) {
+			printf("Modo establecido correctamente: SOFTAP\n\r");
+		} else {
+			printf("No se pudo establecer el Modo Intentar nuevamente\n\r");
+		}
 	}
-
+	else{
+		printf("El Modulo WIFI Esta Apagado\n\r");
+	}
 }
 
 void esp8266SetModeWithFail(esp8266_t * espWifi) {
 	bool_t valueResponse;
-
+    if(espWifi->isOn){
 	esp8266SendCommandAT(send_AT_SET_MODE_With_FAIL, COMMAND_AT);
 	valueResponse = waitForReceiveStringOrTimeoutBlocking( UART_ESP8266,
 
 	"ERROR\r\n", strlen("ERROR\r\n"), 5000);
-	/*	valueResponse = receiveBytesUntilReceiveStringOrTimeoutBlocking(
-	 UART_ESP8266,"\r\r\n\r\nOK\r\n",10, responseWait, &responseWaitSize, 5000);*/
-
 	if (valueResponse) {
 		printf("No se pudo establecer el Modo Intentar nuevamente\n\r");
 	} else {
 		printf("Modo establecido correctamente\n\r");
 	}
+    }
+    else printf("El Modulo WIFI Esta Apagado\n\r");
 
 }
 void esp8266ConnectToAP(esp8266_t * espWifi) {
 	bool_t valueResponse;
+	if (espWifi->isOn) {
+		esp8266SendCommandAT(send_AT_JOIN_ACCESSPOINT, COMMAND_AT);
+		valueResponse = waitForReceiveStringOrTimeoutBlocking( UART_ESP8266,
 
-	esp8266SendCommandAT(send_AT_JOIN_ACCESSPOINT, COMMAND_AT);
-	valueResponse = waitForReceiveStringOrTimeoutBlocking( UART_ESP8266,
+		"WIFI CONNECTED", strlen("WIFI CONNECTED"), 5000);
 
-	"WIFI CONNECTED", strlen("WIFI CONNECTED"), 5000);
-
-	if (valueResponse) {
-		printf("Se conecto satisfactoriamente\n\r");
-	} else {
-		printf("No se conecto\n\r");
-	}
+		if (valueResponse) {
+			printf("Se conecto satisfactoriamente a la red local\n\r");
+		} else {
+			printf("No se conecto la red local\n\r");
+		}
+	} else
+		printf("El Modulo Esta Apagado\n\r");
 
 }
 void esp8266Disconnect(esp8266_t * espWifi) {
 	bool_t valueResponse;
+	if (espWifi->isOn) {
+		esp8266SendCommandAT(send_AT_DISCONNECT, COMMAND_AT);
+		valueResponse = waitForReceiveStringOrTimeoutBlocking( UART_ESP8266,
 
-	esp8266SendCommandAT(send_AT_DISCONNECT, COMMAND_AT);
-	valueResponse = waitForReceiveStringOrTimeoutBlocking( UART_ESP8266,
-
-	"WIFI DISCONNECT", strlen("WIFI DISCONNECT"), 8000);
-	if (valueResponse) {
-		printf("Se desconecto satisfactoriamente\n\r");
-	} else {
-		printf("No se desconecto\n\r");
-	}
+		"WIFI DISCONNECT", strlen("WIFI DISCONNECT"), 8000);
+		if (valueResponse) {
+			printf("Se desconecto satisfactoriamente\n\r");
+		} else {
+			printf("No se desconecto\n\r");
+		}
+	} else
+		printf("El Modulo WIFI Esta Apagado\n\r");
 }
 bool_t esp8266IsConected(esp8266_t * espWifi) {
-	bool_t valueResponse;
-	esp8266SendCommandAT(send_AT_QUERY_JOIN_ACCESSPOINT, COMMAND_AT);
-	valueResponse = waitForReceiveStringOrTimeoutBlocking( UART_ESP8266,
+	bool_t valueResponse =FALSE;
+	if (espWifi->isOn) {
+		esp8266SendCommandAT(send_AT_QUERY_JOIN_ACCESSPOINT, COMMAND_AT);
+		valueResponse = waitForReceiveStringOrTimeoutBlocking( UART_ESP8266,
 
-	"No AP", strlen("No AP"), 5000);
-
+		"No AP", strlen("No AP"), 5000);
+	} else
+		printf("El Modulo WIFI Esta Apagado\n\r");
 	return valueResponse;
 }
 void esp8266TypeConection(esp8266_t * espWifi) {
 	bool_t valueResponse;
-	esp8266SendCommandAT(send_AT_TCP_UDP_CONNECTIONS, COMMAND_AT);
-	valueResponse = waitForReceiveStringOrTimeoutBlocking( UART_ESP8266,
+	if (espWifi->isOn) {
+		esp8266SendCommandAT(send_AT_TCP_UDP_CONNECTIONS, COMMAND_AT);
+		valueResponse = waitForReceiveStringOrTimeoutBlocking( UART_ESP8266,
 
-	"AT+CIPMUX=1\r\r\n\r\nOK\r\n", strlen("AT+CIPMUX=1\r\r\n\r\nOK\r\n"), 5000);
-	if (valueResponse) {
-		printf("Tipo de Conexion Multiple\n\r");
-	} else {
-		printf("No se Establecio el tipo de Conexion\n\r");
+		"AT+CIPMUX=1\r\r\n\r\nOK\r\n", strlen("AT+CIPMUX=1\r\r\n\r\nOK\r\n"),
+				5000);
+		if (valueResponse) {
+			printf("Tipo de Conexion Multiple TCP\n\r");
+		} else {
+			printf("No se Establecio el tipo de Conexion\n\r");
+		}
 	}
+	else printf("El Modulo WIFI Esta Apagado\n\r");
 }
 void esp8266OpenPortAndEnableServer(esp8266_t * espWifi) {
 	bool_t valueResponse;
+	if(espWifi->isOn){
 	esp8266SendCommandAT(send_AT_AS_SERVER_AND_OPEN_PORT, COMMAND_AT);
 	valueResponse = waitForReceiveStringOrTimeoutBlocking( UART_ESP8266,
 
@@ -193,7 +208,8 @@ void esp8266OpenPortAndEnableServer(esp8266_t * espWifi) {
 	} else {
 		printf("No Se configuro como Servidor y se abrio el puerto 80\n\r");
 	}
-
+	}
+	else  printf("El Modulo WIFI Esta Apagado\n\r");
 }
 void esp8266ReturnSofAPIP(esp8266_t * espWifi) {
 	bool_t valueResponse;
@@ -201,87 +217,101 @@ void esp8266ReturnSofAPIP(esp8266_t * espWifi) {
 	uint8_t dato;
 	uint8_t i;
 	uint8_t count = 0;
-	esp8266SendCommandAT(send_AT_CHECKIP, COMMAND_AT);
-	valueResponse = waitForReceiveStringOrTimeoutBlocking( UART_ESP8266,
-
-	"+CIFSR:STAIP,", strlen("+CIFSR:STAIP,"), 5000);
-	if (valueResponse) {
-		delay(4);
-		for (i = 0; i < 20; i++) {
-			if (uartReadByte( UART_ESP8266, &dato)) {
-				/* Se reenvía el dato a la UART_USB realizando un puente entre ambas */
-				//uartWriteByte( UART_USB, dato );
-				loadIP[i] = dato;
-				delayInaccurateUs(45);
-
-			}
-		}
-		printf("IP del Servidor:\n\r");
-		for (i = 0; i < 15; i++) {
-			if (loadIP[i] == '"') {
-				count++;
-				i++;
-			}
-			if (count == 1) {
-				uartWriteByte(UART_USB, loadIP[i]);
-			}
-
-
-		}
-		printf("\n\r");
-	}
-	else {
-		printf("verificar el envio del comando CIFSR\n\r");
-	}
-}
-bool_t esp8266CheckConnections(){
-	bool_t valueResponse;
-	uint8_t idConnection;
+	if (espWifi->isOn) {
+		esp8266SendCommandAT(send_AT_CHECKIP, COMMAND_AT);
 		valueResponse = waitForReceiveStringOrTimeoutBlocking( UART_ESP8266,
 
-		 "+IPD", strlen("+IPD"), 3000);
-		 if (valueResponse) {
-			 printf("Vino una solicitud\n\r");
-			 idConnection=0;
-			 esp8266SendData();
-		 }
-		else {
-		 //printf("No hay Conexiones pendiente\n\r");
+		"+CIFSR:STAIP,", strlen("+CIFSR:STAIP,"), 5000);
+		if (valueResponse) {
+			delay(4);
+			for (i = 0; i < 20; i++) {
+				if (uartReadByte( UART_ESP8266, &dato)) {
 
-		 }
-    return valueResponse;
-}
-void esp8266CheckStatus(esp8266_t * espWifi){
-	//bool_t valueResponse;
-			esp8266SendCommandAT(send_AT_TCP_UDP_CONNECTIONS_STATUS, COMMAND_AT);
+					loadIP[i] = dato;
+					delayInaccurateUs(45);
 
-}
-void esp8266SendData(){
-	bool_t valueResponse;
-
-		esp8266SendCommandAT(send_AT_SEND_DATA, COMMAND_AT);
-			valueResponse = waitForReceiveStringOrTimeoutBlocking( UART_ESP8266,
-
-			 "SEND OK", strlen("SEND OK"), 3000);
-			if(valueResponse){
-				esp8266SendForm();
+				}
 			}
-}
-void esp8266SendForm(){
-	if(gpioRead(TEC1)){
-	esp8266SendCommandAT(send_FORM_B, FORM);
+			printf("IP del Servidor:\n\r");
+			for (i = 0; i < 15; i++) {
+				if (loadIP[i] == '"') {
+					count++;
+					i++;
+				}
+				if (count == 1) {
+					uartWriteByte(UART_USB, loadIP[i]);
+				}
 
-	}
-	else{
-		esp8266SendCommandAT(send_FORM_A, FORM);
-	}
-	esp8266SendCommandAT(send_CONNECTION_CLOSED_0, COMMAND_AT);
-	esp8266SendCommandAT(send_CONNECTION_CLOSED_1, COMMAND_AT);
+			}
+			printf("\n\r");
+		} else {
+			printf("verificar el envio del comando CIFSR\n\r");
+		}
+	} else
+		printf("El Modulo WIFI Esta Apagado\n\r");
 }
+
+
+
+void esp8266CheckConnectionsFSM(esp8266_t * espWifi){
+	switch (espWifi->comunication) {
+
+	case WAIT_QUERY:
+		if (waitForReceiveStringOrTimeoutBlocking( UART_ESP8266,
+
+		"+IPD", strlen("+IPD"), 3000)) {
+			printf("Vino una solicitud\n\r");
+			delay(20);
+			espWifi->comunication = SEND_DATA;
+		}
+
+		break;
+
+	case SEND_DATA:
+		//esp8266SendCommandAT(send_AT_SEND_DATA_ID_0, COMMAND_AT);
+
+        esp8266SendCommandAT(send_AT_SEND_DATA_ID_1	, COMMAND_AT);
+		if (waitForReceiveStringOrTimeoutBlocking( UART_ESP8266,
+
+		"OK\r\n>", strlen("OK\r\n>"), 3000)) {
+			delay(20);
+			espWifi->comunication = SEND_FORM;
+
+		}
+
+		break;
+	case SEND_FORM:
+		if (gpioRead(TEC1)) {
+			esp8266SendCommandAT(send_FORM_B, FORM);
+
+		} else {
+			esp8266SendCommandAT(send_FORM_A, FORM);
+		}
+		delay(20);
+		espWifi->comunication = CLOSE_CONNECTION;
+
+		break;
+
+	case CLOSE_CONNECTION:
+		delay(5);
+		esp8266SendCommandAT(send_CONNECTION_CLOSED_0, COMMAND_AT);
+		delay(5);
+		esp8266SendCommandAT(send_CONNECTION_CLOSED_1, COMMAND_AT);
+		espWifi->comunication = WAIT_QUERY;
+		break;
+	}
+}
+
+void esp8266CheckStatus(esp8266_t * espWifi){
+				esp8266SendCommandAT(send_AT_TCP_UDP_CONNECTIONS_STATUS, COMMAND_AT);
+
+}
+
 
 
 void esp8266Restore(esp8266_t * espWifi) {
 	bool_t valueResponse;
+	if(espWifi->isOn){
 	esp8266SendCommandAT(send_AT_TCP_RESTORE, COMMAND_AT);
 	valueResponse = waitForReceiveStringOrTimeoutBlocking( UART_ESP8266,
 
@@ -291,7 +321,8 @@ void esp8266Restore(esp8266_t * espWifi) {
 	 } else {
 	 printf("No se restauro de fabrica\n\r");
 	 }
-
+	}
+	else printf("El Modulo WIFI Esta Apagado\n\r");
 }
 void esp8266SendCommandAT(char *command, comandAT_t test) {
 	uint8_t cr = 0x0D;

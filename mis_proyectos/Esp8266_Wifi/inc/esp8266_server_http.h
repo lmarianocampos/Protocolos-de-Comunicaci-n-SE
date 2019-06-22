@@ -5,6 +5,18 @@
 #define UART_ESP8266 UART_232
 #define SIZE_RESPONSE_WAIT  30
 #define RECONNECTION 	3    //CANTIDAD DE REINTENTOS PARA RECONECTAR ALA RED
+typedef enum {
+	COMMAND_AT, COMMAND_TEST_AT,
+	COMMAND_TEST_AT_FAIL,
+	FORM
+} comandAT_t;
+
+typedef enum{
+	WAIT_QUERY,
+	SEND_DATA,
+	SEND_FORM,
+	CLOSE_CONNECTION
+}sendForm_t;
 
 typedef struct {
 	gpioMap_t pinVcc;
@@ -13,19 +25,17 @@ typedef struct {
 	bool_t isConnectionAT;
 	char * ssid;
 	char * password;
+	sendForm_t comunication;
 } esp8266_t;
 
-typedef enum {
-	COMMAND_AT, COMMAND_TEST_AT,
-	COMMAND_TEST_AT_FAIL,
-	FORM
-} comandAT_t;
+
+
 
 
 //esta función inicializa la estructura correspondiente al módulo
 void esp8266Init(esp8266_t * espWifi, gpioMap_t pinVcc,
 		bool_t isConectedToNetworkWifi, bool_t isOn, bool_t IsConnectionAT,
-		char * const ssid, char * const password); //
+		char * const ssid, char * const password,sendForm_t waitQuery); //
 //esta función enciende el módulo esp8266
 void esp8266SetOn(esp8266_t * espWifi);
 //esta función apaga el módulo
@@ -55,8 +65,8 @@ void esp8266TypeConection(esp8266_t * espWifi);
 void esp8266OpenPortAndEnableServer(esp8266_t * espWifi);
 //Esta Funcion devuelve la ip del modulo WIFI
 void esp8266ReturnSofAPIP(esp8266_t * espWifi);
-//Es función chekea si hay peticiones de clientes
-bool_t esp8266CheckConnections(void);
+//Es función chekea si hay peticiones de clientes cada 500 ms
+void esp8266CheckConnections();
 //est función verifica el status del modulo WIFI
 void esp8266CheckStatus(esp8266_t * espWifi);//AT+CIPSTATUS
 void esp8266SendData(void);//AT+CIPSEND=0,30
@@ -64,6 +74,11 @@ void esp8266SendData(void);//AT+CIPSEND=0,30
 void esp8266SendForm(void);
 //Esta función establece el modulo WIFI de fabrica
 void esp8266Restore(esp8266_t * espWifi);
+//
+
+//
+void esp8266CheckConnectionsFSM(esp8266_t * espWifi);
+
 //esta función envía comandos AT al módulo
 void esp8266SendCommandAT(char *command, comandAT_t test);
 

@@ -63,54 +63,16 @@ ESP01 (ESP8266) connections:
 
 #include "sapi.h"
 #include "esp8266_server_http_uart.h"
-///#include "sapi_esp8266.h"
-//#include "sapi_stdio.h"
 #include <string.h>
 
 /*==================[macros and definitions]=================================*/
 
-// Se deben definir los datos del nombre de la red y la contrasenia.
-//#define WIFI_NAME         "my_ssid"
-//#define WIFI_PASS         "my_pass"
-// El maximo tiempo que se espera una respuesta del modulo ESP8266
-#define WIFI_MAX_DELAY    60000
-
-// El inicio y fin HTML le dan formato al texto enviado por el usuario
-#define BEGIN_USER_LINE   "<h3 style=\"text-align: center;\"><strong>"
-#define END_USER_LINE     "</strong></h3>"
 
 
 /*==================[internal functions declaration]=========================*/
 
 /*==================[internal data definition]===============================*/
 
-const char HttpWebPageHeader [] =
-   "<!DOCTYPE HTML>"
-   "<html>"
-   "<head><title>EDU-CIAA NXP</title>"
-   "<meta http-equiv=\"refresh\" content=\"15\">"
-   "</head>"
-   "<p style=\"text-align: center;\">&nbsp;</p>"
-   "<p style=\"text-align: center;\"><span style=\"color: #0000ff;\"><strong><img src=\"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT2moZZ0qZ5Az_Qt4kRv6NsJtIxKJl8phyn0APAyfsshhpvpjPs\" alt=\"Logo\" width=\"135\" height=\"135\" /></strong></span></p>"
-   "<h1 style=\"text-align: center;\"><span style=\"color: #0000ff;\"><strong>Servidor Web HTTP<br />ESP8266 - EDU CIAA NXP</strong></span></h1>"
-   "<h4 style=\"text-align: center;\"><strong><em>En esta pagina web se muestran datos provenientes de la EDU-CIAA NXP</em></strong><br /><strong><em>enviados cuando un cliente HTTP como esta pagina realiza una peticion al servidor</em></strong></h4>"
-   "<p style=\"text-align: center;\">INICIO USER HTML</p>"
-   "<p style=\"text-align: center;\">&nbsp;</p>"
-   "<p style=\"text-align: center;\">&nbsp;</p>"
-//		"<body bgcolor=\"#E2E1E3\"></body>"
-   ;
-
-const char HttpWebPageEnd [] =
-   "<p style=\"text-align: center;\">&nbsp;</p>"
-   "<p style=\"text-align: center;\">&nbsp;</p>"
-   "<p style=\"text-align: center;\">FIN USER HTML</p>"
-   "<hr />"
-   "<p style=\"text-align: center;\"><em>Copyright&nbsp;Agustin Bassi -&nbsp;</em><em>Pablo Gomez</em></p>"
-   "<p style=\"text-align: center;\">CURSOS INET 2017</p>"
-   "<p style=\"text-align: center;\"><a href=\"http://www.proyecto-ciaa.com.ar\">www.proyecto-ciaa.com.ar</a></p>"
-   "</html>";
-
-char HttpWebPageBody [200];
 
 
 
@@ -135,24 +97,24 @@ uint8_t dato;
 
 delayConfig(&dalayReceiveResponse, 500);// cada 1 segundo monitoreo si hay solicitud de clientes
 while(TRUE){
-	esp8266ReadUartUSB();//verifica si hay datos por el puerto UART USB
-	//esp8266ReadUartEsp8266();
+    esp8266ReadUartUSB();//verifica si hay datos por el puerto UART USB
+
 	if(delayRead(&dalayReceiveResponse)){
 		esp8266CheckConnections();
 	}
 
 
 	/* Si recibe un byte de la UART_USB lo guardarlo en la variable dato. */
-	//if( uartReadByte( UART_USB, &dato ) ){
+//if( uartReadByte( UART_USB, &dato ) ){
 	         /* Se reenvía el dato a la UART_232 realizando un puente entre ambas */
-	  //    uartWriteByte( UART_232, dato );
-	    //}
+  //uartWriteByte( UART_232, dato );
+	//   }
 
 	/* Si recibe un byte de la UART_232 lo guardarlo en la variable dato. */
-	     if( uartReadByte( UART_ESP8266, &dato ) ){
+	  //  if( uartReadByte( UART_ESP8266, &dato ) ){
 	         /* Se reenvía el dato a la UART_USB realizando un puente entre ambas */
-	        uartWriteByte( UART_USB, dato );
-	      }
+	    //   uartWriteByte( UART_USB, dato );
+	     //}
 
 
 
