@@ -61,7 +61,7 @@ void initStepperMotor(void) {
 void onRx(void *noUsado) {
 	BaseType_t xHigherpriorityTaskWoken = pdFALSE;
 	char data = uartRxRead(UART_USB);
-	printf("Recibimos un dato:%c por la UART\r\n", data);
+
 	xQueueSendFromISR(cola_rec, &data, &xHigherpriorityTaskWoken);
 
 	if (xHigherpriorityTaskWoken == pdTRUE) {

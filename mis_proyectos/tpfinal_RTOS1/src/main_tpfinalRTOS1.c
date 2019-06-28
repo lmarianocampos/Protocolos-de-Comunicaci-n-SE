@@ -36,7 +36,6 @@
 #include "FreeRTOSConfig.h"
 #include "serie_uart.h"
 
-
 /*==================[definiciones y macros]==================================*/
 
 /*==================[definiciones de datos internos]=========================*/
@@ -60,7 +59,6 @@ int main(void) {
 	initSemaphore();
 	initTimers();
 	initStepperMotor();
-
 
 	// Led para dar senal de vida
 	gpioWrite(LED3, ON);
