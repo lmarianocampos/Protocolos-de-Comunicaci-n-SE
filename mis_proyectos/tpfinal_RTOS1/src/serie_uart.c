@@ -80,8 +80,6 @@ void processRxSerieTask(void * taskParmPtr) {
 			if (message[index] == '\n') {
 				message[index + 1] = '\0';
 				index = 0;
-
-				//printf("llego un barra n\n\r");
 				xSemaphoreGive(sinsynchronizeTasks);/*cuando libera el semaforo significa que ya hay un comando en la cola de recepción*/
 			} else {
 				index++;
