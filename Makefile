@@ -10,7 +10,7 @@ BOARD = edu_ciaa_nxp
 # relative to this folder, leave void if the program is in this folder
 PROGRAM_PATH = mis_proyectos
 # Program name
-PROGRAM_NAME = Esp8266_Wifi
+PROGRAM_NAME = tpfinal_RTOS1
 # -------- Program path and name from an external projec.mk file -------
 -include program.mk
 # Compose program path and name

@@ -48,7 +48,7 @@ extern "C" {
 #endif
 
 /*==================[macros and definitions]=================================*/
-#define SAPI_USE_INTERRUPTS
+//#define SAPI_USE_INTERRUPTS
 /*==================[typedef]================================================*/
 //typedef void (*voidFunctionPointer_t)(void);
 
