@@ -11,6 +11,9 @@ MRP0015: El eje del motor gira a la derecha  10 pasos
 MLA0045: El eje del motor gira a la izquierda  45°
 MRA0090: El eje del motor gira a la derecha 90°  
 
+Led Amarillo: su parpadeo representa  el tren de pulso
+Led Rojo: encendido-> Motor habilitado  Apagado -> motor Deshabilitados 
+Led verde: encendido-> Sentido de giro Derecho Apagado -> Sentido de giro izquiero 
 
 Enlace del video
 https://youtu.be/Ua47b0WDjeo
