@@ -164,8 +164,8 @@ void uartWriteString( uartMap_t uart, const char* str );
 // Blocking, Send a Byte Array
 void uartWriteByteArray( uartMap_t uart, const uint8_t* byteArray, uint32_t byteArrayLen );
 
-#define SAPI_USE_INTERRUPTS //Borrar esta linea y habilitarlo desde el archivo config.mk
-
+//#define SAPI_USE_INTERRUPTS //Borrar esta linea y habilitarlo desde el archivo config.mk
+                            //habilite esta macro para habilitar la interrupción por recepción de la UART
 #ifdef SAPI_USE_INTERRUPTS
 
 //-------------------------------------------------------------

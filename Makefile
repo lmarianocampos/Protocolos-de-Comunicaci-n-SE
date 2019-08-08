@@ -8,9 +8,9 @@ BOARD = edu_ciaa_nxp
 # -------- Program path and name default values ------------------------
 # Program path
 # relative to this folder, leave void if the program is in this folder
-PROGRAM_PATH = mis_proyectos
+PROGRAM_PATH = mis_proyectos#examples/c/sapi/uart
 # Program name
-PROGRAM_NAME = tpfinal_RTOS1
+PROGRAM_NAME = freeRTOS2_TP#tx_rx_interrupt_bridge
 # -------- Program path and name from an external projec.mk file -------
 -include program.mk
 # Compose program path and name
