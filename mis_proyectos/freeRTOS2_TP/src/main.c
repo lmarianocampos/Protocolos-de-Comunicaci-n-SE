@@ -62,6 +62,16 @@ int main(void) {
 		   	  que venga el técnico de mantenmiento   */
 
 	   }
+	   queueSend = xQueueCreate(SIZE_QUEUE_SEND,sizeof(char));
+
+
+	   	   if(queueSend == NULL){
+	   		   printf("No se pudo crear la COLA Envío\n");
+	   		   		   	  gpioWrite(LEDB, ON);
+	   		   		   	  while(1);
+	   		   		   	  /* se queda bloqueado el sistema hasta
+	   		   		   	  que venga el técnico de mantenmiento   */
+	   	   }
 	   queueMayusculizar = xQueueCreate(SIZE_QUEUE_MAYUS,sizeof(char*));
 	   if(queueMayusculizar == NULL){
 		   printf("No se pudo crear la COLA Mayusculizar\n");

@@ -49,7 +49,7 @@ void procesamientoDatoRecibido(void* taskParmPtr) {
 	static uint8_t operacion, tamanio_cadena;
 	uint32_t digitoUnidad, digitoDecimal, sizeTotal;
 
-	char * chainPayload;
+	//char * chainPayload;
 
 	// ---------- REPETIR POR SIEMPRE --------------------------
 	while (TRUE) {
@@ -138,8 +138,9 @@ void procesamientoDatoRecibido(void* taskParmPtr) {
 			}
 			if (datagrama == DATAGRAMA_VALIDO) {
 				sizeTotal = sizeTotal + 2;
-
+				printf("tam del HEAP sin reserva:%d\r\n",xPortGetFreeHeapSize());
 				chainPayload = pvPortMalloc(sizeTotal * sizeof(char));
+			printf(" tama del HEAP con reserva:%d\r\n",xPortGetFreeHeapSize());
 				if (chainPayload != NULL) {
 
 					chainPayloadAux = chainPayload;
@@ -178,21 +179,24 @@ void procesamientoDatoRecibido(void* taskParmPtr) {
 void taskAddHeaderLayerTwo(void* taskParmPtr) {
 	char bufferSend[12];
 	uint8_t i;
-	char *pSend;
+	char *pSend, *pSendAux;
 	while (1) {
 		if (pdTRUE == xQueueReceive(queueTransmitir, &pSend, portMAX_DELAY)) {
 			bufferSend[0] = '{';
 			i = 1;
-			while (*pSend != '\0') {
-				bufferSend[i] = *pSend;
-				pSend++;
+			pSendAux = pSend;
+			while (*pSendAux != '\0') {
+				bufferSend[i] = *pSendAux;
+				xQueueSend(queueSend, &bufferSend[i], portMAX_DELAY);
+				pSendAux++;
 				i++;
 			}
 			bufferSend[i] = '}';
 			printf("%s\r\n", bufferSend);
 
-			vPortFree((char*)pSend);
-			//vPortFree(chainPayload);
+			vPortFree(pSend);
+			printf(" tama del HEAP sin reserva:%d\r\n", xPortGetFreeHeapSize());
+
 		}
 	}
 }

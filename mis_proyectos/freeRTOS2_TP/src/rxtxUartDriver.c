@@ -29,6 +29,8 @@ void IRQ_Init(void) {
 	uartConfig(UART_USB, 115200);
 	// Seteo un callback al evento de recepcion y habilito su interrupcion
 	uartCallbackSet(UART_USB, UART_RECEIVE, datoRecibido, NULL);
+	// Seteo un callback al evento de transmisor libre y habilito su interrupcion
+	  uartCallbackSet(UART_USB, UART_TRANSMITER_FREE, uartUsbSendCallback, NULL);
 	// Habilito todas las interrupciones de UART_USB
 	uartInterrupt(UART_USB, TRUE);
 
@@ -66,4 +68,21 @@ void datoRecibido(void *noUsado) {
 		break;
 	}
 	portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+}
+
+//interrup tx
+void uartUsbSendCallback(void * noUsado){
+	BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+	char dataSend;
+
+	if(pdTRUE == xQueueReceiveFromISR(queueSend, &dataSend, &xHigherPriorityTaskWoken)){
+		uartTxWrite(UART_USB, dataSend);
+		//printf("dato recibio:%c",dataSend);
+			if(xHigherPriorityTaskWoken){
+				portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+			}
+	}
+
+
+	//uartTxWrite(UART_USB, tx);
 }

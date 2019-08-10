@@ -41,11 +41,13 @@ extern "C" {
 ///*=====[Macros de definicion de constantes publicas]=========================*/
 //
 #define TAMANIO_MAXIMO_PAQUETE 104
-//
+#define SIZE_QUEUE_SEND    50
+#define SIZE_QUEUE_RECEIVE 50
 ///*=====[Macros estilo funcion publicas]======================================*/
 
 ///*=====[Definiciones de tipos de datos publicos]=============================*/
 QueueHandle_t colaReceive;
+QueueHandle_t queueSend;
 
 ////Funcion de inicializacion de interrupciones
 void IRQ_Init(void);
@@ -53,7 +55,8 @@ void IRQ_Init(void);
 
 // Funcion Handler de ISR UART_USB de recepcion
 void datoRecibido(void *noUsado);
-
+//Esta Función corresponde a la interrupción de buffer transmisor tx vacío
+void uartUsbSendCallback(void * noUsado);
 ///*=====[Prototipos de funciones publicas]====================================*/
 
 ///*=====[Prototipos de funciones publicas de interrupcion]====================*/
