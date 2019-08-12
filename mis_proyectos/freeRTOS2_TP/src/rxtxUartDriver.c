@@ -30,7 +30,7 @@ void IRQ_Init(void) {
 	// Seteo un callback al evento de recepcion y habilito su interrupcion
 	uartCallbackSet(UART_USB, UART_RECEIVE, datoRecibido, NULL);
 	// Seteo un callback al evento de transmisor libre y habilito su interrupcion
-	  uartCallbackSet(UART_USB, UART_TRANSMITER_FREE, uartUsbSendCallback, NULL);
+	 //uartCallbackSet(UART_USB, UART_TRANSMITER_FREE, uartUsbSendCallback, NULL);
 	// Habilito todas las interrupciones de UART_USB
 	uartInterrupt(UART_USB, TRUE);
 
@@ -71,18 +71,46 @@ void datoRecibido(void *noUsado) {
 }
 
 //interrup tx
-void uartUsbSendCallback(void * noUsado){
+void interruptTx(void * noUsado){
+
 	BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-	char dataSend;
-
+	char * dataSend = NULL,* dataSendAux = NULL;
+	static uint8_t i=0;
 	if(pdTRUE == xQueueReceiveFromISR(queueSend, &dataSend, &xHigherPriorityTaskWoken)){
-		uartTxWrite(UART_USB, dataSend);
-		//printf("dato recibio:%c",dataSend);
-			if(xHigherPriorityTaskWoken){
-				portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
-			}
-	}
+		while(*(dataSend+i)!='\0'){
+				if (uartTxReady(UART_USB)) {
+						//uartTxWrite(UART_USB, *(dataSend+i));
+						uartWriteByte(UART_USB,*(dataSend+i));
+						i++;
+				}else{
+					//break;
+				}
 
+		}
+	//	if (*(dataSend+i) == '\0') {
+		i=0;
+				uartCallbackClr( UART_USB, UART_TRANSMITER_FREE);
+	//		}
+	}
+	//uartWriteString(UART_USB, dataSend);
+
+           xQueueSendFromISR(queueDeletePointer,&dataSend,&xHigherPriorityTaskWoken);
+	if(xHigherPriorityTaskWoken){
+						portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+					}
 
 	//uartTxWrite(UART_USB, tx);
+}
+
+void taskDeletePoint(void* taskParmPtr){
+	char * pointerDelete = NULL;
+
+	while(1){
+		if(pdTRUE == xQueueReceive(queueDeletePointer,&pointerDelete,portMAX_DELAY)){
+			vPortFree(pointerDelete);
+			printf("tama del HEAP sin reserva:%d\r\n", xPortGetFreeHeapSize());
+		}
+
+
+}
 }

@@ -39,35 +39,39 @@
 ///*=====[Implementaciones de funciones publicas]==============================*/
 
 void operacion0(void* taskParmPtr) {
-	char *pMayusculizar, *pMayusculizarAux;
+	char *pMayusculizar = NULL;
+	uint8_t i=0;
 	while (1) {
 		if (pdTRUE == xQueueReceive(queueMayusculizar, &pMayusculizar,
 		portMAX_DELAY)) {
-			pMayusculizarAux = pMayusculizar;
-			while (*pMayusculizarAux != '\0') {
-				if (*pMayusculizarAux >= 'a' && *pMayusculizarAux <= 'z') {
-					*pMayusculizarAux = *pMayusculizarAux - 32;
 
+			while (*(pMayusculizar+i) != '\0') {
+				if (*(pMayusculizar+i) >= 'a' && *(pMayusculizar+i) <= 'z') {
+					*(pMayusculizar+i) = *(pMayusculizar+i) - 32;
 				}
-				pMayusculizarAux++;
+				i++;
 			}
+			i=0;
+
 			xQueueSend(queueTransmitir,&pMayusculizar,portMAX_DELAY);
 		}
 	}
 }
 void operacion1 (void* taskParmPtr){
-	char *pMinusculizar, *pMinusculizarAux;
+	char *pMinusculizar = NULL;
+	uint8_t i=0;
 		while (1) {
 			if (pdTRUE == xQueueReceive(queueMinusculizar, &pMinusculizar,
 			portMAX_DELAY)) {
-				pMinusculizarAux = pMinusculizar;
-				while (*pMinusculizarAux != '\0') {
-					if (*pMinusculizarAux >= 'A' && *pMinusculizarAux <= 'Z') {
-						*pMinusculizarAux = *pMinusculizarAux + 32;
+				//pMinusculizarAux = pMinusculizar;
+				while (*(pMinusculizar+i) != '\0') {
+					if (*(pMinusculizar+i) >= 'A' && *(pMinusculizar+i) <= 'Z') {
+						*(pMinusculizar+i) = *(pMinusculizar+i) + 32;
 
 					}
-					pMinusculizarAux++;
+					i++;
 				}
+				i=0;
 				xQueueSend(queueTransmitir,&pMinusculizar,portMAX_DELAY);
 			}
 		}

@@ -53,7 +53,7 @@ int main(void) {
 	gpioWrite(LED2, OFF);
 
 		//Creacion de la colas
-	colaReceive = xQueueCreate(SIZE_QUEUE_RECEIVE,sizeof(char));
+	colaReceive = xQueueCreate(SIZE_QUEUE_RECEIVE,sizeof(char ));
 	   if(colaReceive == NULL){
 		   	  printf("No se pudo crear la COLA de recepcion de caracteres\n");
 		   	  gpioWrite(LED1, ON);
@@ -62,7 +62,19 @@ int main(void) {
 		   	  que venga el técnico de mantenmiento   */
 
 	   }
-	   queueSend = xQueueCreate(SIZE_QUEUE_SEND,sizeof(char));
+
+	   queueDeletePointer = xQueueCreate(SIZE_QUEUE_DELETE_POINTER,sizeof(char *));
+
+
+	   	   	   if(queueDeletePointer == NULL){
+	   	   		   printf("No se pudo crear la COLA para borrar el puntero y liberar la memoria\n");
+	   	   		   		   	  gpioWrite(LEDB, ON);
+	   	   		   		   	  while(1);
+	   	   		   		   	  /* se queda bloqueado el sistema hasta
+	   	   		   		   	  que venga el técnico de mantenmiento   */
+	   	   	   }
+
+	   queueSend = xQueueCreate(SIZE_QUEUE_SEND,sizeof(char *));
 
 
 	   	   if(queueSend == NULL){
@@ -141,6 +153,14 @@ int main(void) {
 				0                         // Puntero a la tarea creada en el sistema
 				);
 
+		// Creacion  tareas en freeRTOS
+				xTaskCreate(taskDeletePoint,                     // Funcion de la tarea a ejecutar
+								(const char *) "Libera Memoria", // Nombre de la tarea como String amigable para el usuario
+								configMINIMAL_STACK_SIZE * 2, // Cantidad de stack de la tarea
+								0,                          // Parametros de tarea
+								tskIDLE_PRIORITY + 1,         // Prioridad de la tarea
+								0                         // Puntero a la tarea creada en el sistema
+								);
 
 
 	// Iniciar scheduler

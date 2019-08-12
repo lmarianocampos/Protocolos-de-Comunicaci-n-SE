@@ -52,7 +52,7 @@ extern "C" {
 //Tarea para el procesamiento de los datos recibidos a traves de UART_USB
 void procesamientoDatoRecibido(void* taskParmPtr);
 
-
+void interruptTx(void * noUsado);
 //
 ///*=====[Prototipos de funciones publicas de interrupcion]====================*/
 

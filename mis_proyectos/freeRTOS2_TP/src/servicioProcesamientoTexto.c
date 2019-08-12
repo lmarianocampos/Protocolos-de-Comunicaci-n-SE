@@ -57,7 +57,7 @@ void procesamientoDatoRecibido(void* taskParmPtr) {
 		if (pdTRUE == xQueueReceive(colaReceive, &data, portMAX_DELAY)) { // aquí se bloquea esperando por un caracter
 			cadenaProcesar[i] = data;
 			if (cadenaProcesar[i] == '}') {
-				//cadenaProcesar[i + 1] = '\0';
+				cadenaProcesar[i + 1] = '\0';
 				i = 0;
 				flag_mensaje_finalizado = TRUE;
 				datagrama = DATAGRAMA_VALIDO_SOF;
@@ -177,25 +177,25 @@ void procesamientoDatoRecibido(void* taskParmPtr) {
 }
 
 void taskAddHeaderLayerTwo(void* taskParmPtr) {
-	char bufferSend[12];
-	uint8_t i;
-	char *pSend, *pSendAux;
+	//char bufferSend[12];
+	//static uint8_t i;// debe ser static la variable i
+	char * pSend = NULL;
 	while (1) {
 		if (pdTRUE == xQueueReceive(queueTransmitir, &pSend, portMAX_DELAY)) {
-			bufferSend[0] = '{';
-			i = 1;
-			pSendAux = pSend;
-			while (*pSendAux != '\0') {
-				bufferSend[i] = *pSendAux;
-				xQueueSend(queueSend, &bufferSend[i], portMAX_DELAY);
-				pSendAux++;
+
+	/*		while (*(pSend+i) != '\0') {
+				bufferSend[i] = *(pSend+i);
 				i++;
 			}
-			bufferSend[i] = '}';
-			printf("%s\r\n", bufferSend);
+			bufferSend[i]='\0';
+			i=0;*/
+			xQueueSend(queueSend, &pSend, portMAX_DELAY);
+			uartSetPendingInterrupt(UART_USB);
+			uartCallbackSet(UART_USB, UART_TRANSMITER_FREE, interruptTx, NULL);
+			//printf("%s\r\n", bufferSend);
 
-			vPortFree(pSend);
-			printf(" tama del HEAP sin reserva:%d\r\n", xPortGetFreeHeapSize());
+
+			//printf(" tama del HEAP sin reserva:%d\r\n", xPortGetFreeHeapSize());
 
 		}
 	}

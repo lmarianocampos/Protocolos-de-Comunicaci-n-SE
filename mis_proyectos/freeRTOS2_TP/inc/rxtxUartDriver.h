@@ -43,12 +43,13 @@ extern "C" {
 #define TAMANIO_MAXIMO_PAQUETE 104
 #define SIZE_QUEUE_SEND    50
 #define SIZE_QUEUE_RECEIVE 50
+#define SIZE_QUEUE_DELETE_POINTER 50
 ///*=====[Macros estilo funcion publicas]======================================*/
 
 ///*=====[Definiciones de tipos de datos publicos]=============================*/
 QueueHandle_t colaReceive;
 QueueHandle_t queueSend;
-
+QueueHandle_t queueDeletePointer;
 ////Funcion de inicializacion de interrupciones
 void IRQ_Init(void);
 //Esta funcion se ejecuta a traves de una Interrupcion cuando se detecta un dato en la buffer de RX de la cola de la UART_USB
@@ -57,6 +58,7 @@ void IRQ_Init(void);
 void datoRecibido(void *noUsado);
 //Esta Función corresponde a la interrupción de buffer transmisor tx vacío
 void uartUsbSendCallback(void * noUsado);
+void taskDeletePoint(void* taskParmPtr);
 ///*=====[Prototipos de funciones publicas]====================================*/
 
 ///*=====[Prototipos de funciones publicas de interrupcion]====================*/
