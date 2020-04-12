@@ -153,7 +153,7 @@ void procesamientoDatoRecibido(void* taskParmPtr) {
 						*chainPayloadAux = cadenaProcesar[4 + j];
 						chainPayloadAux = chainPayloadAux + 1;
 					}
-					*chainPayloadAux = '\0';//con esto indico que hasta donde debe mayusculizar o minusculizar
+					*chainPayloadAux = '\0';//con esto indico hasta donde debe mayusculizar o minusculizar
 
 					//vPortFree(chainPayloadAux);
 					if (cadenaProcesar[1] == '0') {

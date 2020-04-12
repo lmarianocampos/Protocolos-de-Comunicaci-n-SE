@@ -6,3 +6,4 @@ void onRx(void *noUsado){
 printf("Recibimos un dato:%c por la UART\r\n",dato);
 
 }
+
