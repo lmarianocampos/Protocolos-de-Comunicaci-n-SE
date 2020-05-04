@@ -2,6 +2,8 @@
 #define  _UARTINTERR
 
 #define SIZE_TOTAL_BUFFER 128
+#define BUAD_RATE_9600    9600
+#define BUAD_RATE_115200  115200
 
 #include "sapi.h"
 
@@ -21,14 +23,10 @@ typedef enum {
 	BUFFER_EMPTY, BUFFER_INCOMPLETE, BUFFER_FULL
 } stateBuffer_t;
 
-static stateBuffer_t buffer;
+stateBuffer_t buffer;
 
-typedef enum {
-	TRAMA_VALID, TRAMA_INVALID
-} stateTrama_t;
 
-static char bufferRx[SIZE_TOTAL_BUFFER];
-//static uartComand_t rx;
+char bufferRx[SIZE_TOTAL_BUFFER];
 
 void configuraUart(void);
 void onRx(void *nousado);

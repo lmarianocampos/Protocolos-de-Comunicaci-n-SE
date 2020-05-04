@@ -7,8 +7,9 @@ void onRx(void *nosado) {
 	char command;
 	if (buffer != BUFFER_FULL) {
 
-		command = uartRxRead(UART_USB);
-		printf("Se recibio :%c\n", command);
+		command = uartRxRead(UART_232);
+		uartWriteByte(UART_232,command);
+		//printf("Se recibio :%c\n", command);
 		bufferRx[index] = command;
 
 		if (bufferRx[index] == '\n') {
@@ -20,40 +21,13 @@ void onRx(void *nosado) {
 			buffer = BUFFER_INCOMPLETE;
 		}
 	} else {
-		printf("El buffer de recepcion se encuentra lleno");
+		printf("El buffer de recepcion se encuentra lleno\n");
 	}
-	/*switch (command) {
-	 case '1':
-	 rx = COMMAND_ENABLE_MOTOR;
-	 break;
-	 case '2':
-	 rx = COMMAND_DISABLE_MOTOR;
-	 break;
-	 case '3':
-	 rx = COMMAND_ORIENTATION_HORARIO;
-	 break;
-	 case '4':
-	 rx = COMMAND_ORIENTATION_ANTIHORARIO;
-	 break;
-	 case '5':
-	 rx = COMMAND_MICRO_STEPES;
-	 break;
-	 case '6':
-	 rx = COMMAND_STEPS;
-	 break;
-	 case '7':
-	 rx = COMMAND_ANGLE;
-	 break;
-	 case '8':
-	 rx = COMMAND_ANGLE;
-	 break;
-	 default:
-	 rx = COMMAND_ERROR;
-	 }*/
+
 }
 void configuraUart(void) {
-	uartConfig(UART_USB, 115200);
-	uartCallbackSet(UART_USB, UART_RECEIVE, onRx, NULL);
-	uartInterrupt(UART_USB, TRUE);
+	uartConfig(UART_232, BUAD_RATE_9600);
+	uartCallbackSet(UART_232, UART_RECEIVE, onRx, NULL);
+	uartInterrupt(UART_232, TRUE);
 }
 

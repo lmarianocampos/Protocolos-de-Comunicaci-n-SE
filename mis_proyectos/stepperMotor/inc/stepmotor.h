@@ -2,6 +2,7 @@
 #define _STEP_MOTOR
 
 #include "sapi.h"
+#include "sapi_timer.h"
 
 #define CYCLE_PULSE 20000
 #define DUTY_CYCLE  5000
@@ -48,7 +49,7 @@ typedef struct {
 	float rpm;
 	float stepAngle;
 } stepperMotor_t;
-
+stepperMotor_t stepper;
 static uint32_t pulseCount;
 
 //en caso de usar un arreglo de estructura para la conexión de más de un motor PaP
@@ -65,9 +66,11 @@ void stepperMotorSetSpeed(stepperMotor_t * stepper, float rpm);
 //esta función permite leer la velocidad del eje del motor PaP
 float stepperMotorGetSpeed(stepperMotor_t * stepper);
 
-// esta función establece los micropasos del motor paso a paso.
-void stepperMotorSetMicroSteps(stepperMotor_t * stepper,
-		stepperMotorMicroSteps_t microSteps);
+
+//esta función permite establecer la resolución de los microspasos
+void stepperMotorSetMicroSteps(stepperMotor_t *stepper, bool_t m0MicroStep,bool_t m1MicroStep,
+		bool_t m2MicroStep);
+
 
 //esta función permite leer el microsteps que tiene configurado el motor.
 stepperMotorMicroSteps_t stepperMotorGetMicroStepes(stepperMotor_t * stepper);
@@ -92,10 +95,9 @@ void stepperMotorMoveSteps(stepperMotor_t * stepper, uint32_t numberOfSteps);
 void stepperMotorMoveTurns(stepperMotor_t * stepper, uint32_t numberOfTurns);
 
 //Esta función permite girar el eje del motor un determinado ángulo
-void stepperMotorMoveAngle(stepperMotor_t * stepper, float anlge);
+void stepperMotorMoveAngle(stepperMotor_t * stepper, float angle);
 
-//Esta función permite establecer la resolución de los microspasos
-void stepperMotorMicroSteps(stepperMotor_t *stepper,
-		stepperMotorMicroSteps_t microSteps);
+
+
 
 #endif

@@ -230,7 +230,7 @@ void Timer_SetCompareMatch( uint8_t timerNumber,
 }
 
 /*==================[ISR external functions definition]======================*/
-
+//#define SAPI_USE_INTERRUPTS
 #ifdef SAPI_USE_INTERRUPTS
 
 /*

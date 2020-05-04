@@ -83,18 +83,31 @@ stepperMotorEnable_t stepperMotorGetEnable(stepperMotor_t *stepper) {
 
 void stepperMotorMoveSteps(stepperMotor_t *stepper, uint32_t numberOfSteps) {
 	// debemos generar la cantidad de pulsos...
-	pulseCount = numberOfSteps;
+	//controlar si el motor se encuentra habilitado para generar los pulsos
+	if (stepper->isEnable == STEPPER_ENABLE)
+		pulseCount = numberOfSteps;
+
 }
 
 void stepperMotorMoveTurns(stepperMotor_t *stepper, uint32_t numberOfTurns) {
-	stepperMotorMoveSteps(&stepper,
-			stepper->stepsPerRevolution * numberOfTurns);
+	stepperMotorMoveSteps(stepper, stepper->stepsPerRevolution * numberOfTurns);
 }
 
 void stepperMotorMoveAngle(stepperMotor_t *stepper, float angle) {
 	if (stepper->stepAngle != 0.000) {
-		stepperMotorMoveSteps(&stepper, angle / stepper->stepAngle);
+		stepperMotorMoveSteps(stepper, angle / stepper->stepAngle);
 	} else {
 		printf("No se puede realizar una división por 0");
+	}
+}
+
+void stepperMotorSetMicroSteps(stepperMotor_t *stepper, bool_t m0MicroStep,
+		bool_t m1MicroStep, bool_t m2MicroStep) {
+	//controlar que el eje del motor no este girando para poder establecer un microsteps....
+	//podemos preguntar si pulseCount=0
+	if (pulseCount == 0) {
+		gpioWrite(stepper->microStepsM0Pin, m0MicroStep);
+		gpioWrite(stepper->microStepsM1Pin, m1MicroStep);
+		gpioWrite(stepper->microStepsM2Pin, m2MicroStep);
 	}
 }
