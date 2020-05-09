@@ -9,6 +9,7 @@ void processCommandBufferAux(void) {
 			buffer = BUFFER_EMPTY;
 
 		}
+
 		switch (*bufferAux) {
 		case 'M':
 			switch (*(bufferAux + 1)) {

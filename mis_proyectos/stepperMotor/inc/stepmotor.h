@@ -6,7 +6,6 @@
 
 #define CYCLE_PULSE 20000
 #define DUTY_CYCLE  5000
-#define PULSE_PIN   GPIO2
 
 //cantidad de estructuras de motor PaP que puede almacenar el arreglo
 //en caso de usar un arreglo de estructura para la conexión de más de un motor PaP
@@ -21,8 +20,12 @@ typedef enum {
 } stepperMotorDirection_t;
 
 typedef enum {
-	STEPPER_ENABLE, STEPPER_DISABLE
+	STEPPER_DISABLE,STEPPER_ENABLE
 } stepperMotorEnable_t;
+
+typedef enum{
+	STEPPER_AXIS_NO_MOVE,STEPPER_AXIS_LAST_MOVE, STEPPER_AXIS_IN_MOVE
+}stepperMotorMove_t;
 
 typedef enum {
 	RESOLUTION_FULL_STEP,
@@ -36,7 +39,7 @@ typedef enum {
 typedef struct {
 	uint32_t stepsPerRevolution;
 
-	//gpioMap_t pulsePin;
+	gpioMap_t pulsePin;
 	gpioMap_t directionPin;
 	gpioMap_t enablePin;
 
@@ -45,7 +48,9 @@ typedef struct {
 	gpioMap_t microStepsM2Pin;
 
 	stepperMotorDirection_t direction;
+
 	stepperMotorEnable_t isEnable;
+	stepperMotorMove_t isMoveAxis;
 	float rpm;
 	float stepAngle;
 } stepperMotor_t;
@@ -57,7 +62,7 @@ stepperMotor_t stepperM[STEPPER_MOTOR_TOTAL];
 
 // esta función inicializa la estructura del motor paso a paso y el timer
 void stepperMotorInit(stepperMotor_t *stepper, uint32_t stepsPerRevolution,
-		gpioMap_t directionPin, gpioMap_t enablePin, gpioMap_t microStepsM0Pin,
+		gpioMap_t pulsePin, gpioMap_t directionPin, gpioMap_t enablePin, gpioMap_t microStepsM0Pin,
 		gpioMap_t microStepsM1Pin, gpioMap_t microStepsM2Pin, float stepAngle);
 
 //esta función es para establecer la velocidad del eje del motro PaP

@@ -4,18 +4,21 @@
 static void stepperMotorCycle() {
 
 	if (pulseCount != 0) {
-		gpioWrite(PULSE_PIN, ON);
+		gpioWrite(stepper.pulsePin, ON);
 		pulseCount--;
+	}else{
+		if(pulseCount == 0) stepper.isMoveAxis = STEPPER_AXIS_LAST_MOVE;
 	}
 }
 static void stepperMotorDutyCycle() {
-	gpioWrite(PULSE_PIN, OFF);
+	gpioWrite(stepper.pulsePin, OFF);
 }
 void stepperMotorInit(stepperMotor_t *stepper, uint32_t stepsPerRevolution,
-		gpioMap_t directionPin, gpioMap_t enablePin, gpioMap_t microStepsM0Pin,
+		gpioMap_t pulsePin,gpioMap_t directionPin, gpioMap_t enablePin, gpioMap_t microStepsM0Pin,
 		gpioMap_t microStepsM1Pin, gpioMap_t microStepsM2Pin, float stepAngle) {
 
 	stepper->stepsPerRevolution = stepsPerRevolution;
+	stepper->pulsePin = pulsePin;
 	stepper->directionPin = directionPin;
 	stepper->enablePin = enablePin;
 	stepper->microStepsM0Pin = microStepsM0Pin;
@@ -24,7 +27,7 @@ void stepperMotorInit(stepperMotor_t *stepper, uint32_t stepsPerRevolution,
 	stepper->stepAngle = stepAngle;
 
 	// configuro el sentidos de los GPIO'S
-	gpioConfig(PULSE_PIN, GPIO_OUTPUT);
+	gpioConfig(stepper->pulsePin, GPIO_OUTPUT);
 	gpioConfig(stepper->directionPin, GPIO_OUTPUT);
 	gpioConfig(stepper->enablePin, GPIO_OUTPUT);
 	gpioConfig(stepper->microStepsM0Pin, GPIO_OUTPUT);
@@ -82,11 +85,13 @@ stepperMotorEnable_t stepperMotorGetEnable(stepperMotor_t *stepper) {
 }
 
 void stepperMotorMoveSteps(stepperMotor_t *stepper, uint32_t numberOfSteps) {
-	// debemos generar la cantidad de pulsos...
-	//controlar si el motor se encuentra habilitado para generar los pulsos
-	if (stepper->isEnable == STEPPER_ENABLE)
+	//Controlar que los numeros de pulsos no superen los limites
+	if (stepper->isEnable == STEPPER_ENABLE){
 		pulseCount = numberOfSteps;
-
+		stepper->isMoveAxis= STEPPER_AXIS_IN_MOVE;
+	}else{
+		if(stepper->isEnable == STEPPER_DISABLE) printf("Motor Inhabilitado. \n");
+	}
 }
 
 void stepperMotorMoveTurns(stepperMotor_t *stepper, uint32_t numberOfTurns) {
