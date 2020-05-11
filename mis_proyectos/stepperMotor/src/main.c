@@ -1,17 +1,16 @@
 #include "processcommand.h"
 #include "linearsensor.h"
+#include "debounce.h"
 
 int main(void) {
-	char c;
 	boardConfig();
 	configuraUart();
-	configInterruptIRQ();
+	//configInterruptIRQ();
 
+	printf("Inicia el Firmware...\n");
 	delay_t myDelay;
 	delayInit(&myDelay, 10);
-
-	printf("inicia el Firmware...\n");
-
+	fsmPulseInit(&debounce, GPIO6);
 	stepperMotorInit(&stepper, 100, GPIO2, GPIO1, GPIO0, GPIO3, GPIO4, GPIO5,
 			1.8);
 	//0.5 cm por cada pulsos
@@ -22,6 +21,7 @@ int main(void) {
 			processCommandBufferAux();
 		}
 		//linearSensorSetPosition(&ls, &stepper);
+		fsmPulseUpdate(&debounce);
 	}
 	return 0;
 }

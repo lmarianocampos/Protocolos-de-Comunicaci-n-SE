@@ -19,14 +19,16 @@ void GPIO3_IRQHandler(void) {
 		//contamos los pulsos tanto en sentido horario como antihorario
 		switch (stepper.direction) {
 		case STEPPER_RIGHT:
-			ls.pcClockwise++;
-			printf("Cantidad de Pulsos Horario:%d\n", ls.pcClockwise);
+			linearSensorIncreaseClockWisePulses(&ls);
+
+			//ls.pcClockwise++;
+			printf("Cantidad de Pulsos Horario:%d\n",linearSensorGetPulsesClockWise(& ls));
 
 			break;
 		case STEPPER_LEFT:
-			ls.pcCounterClockWise++;
-			printf("Cantidad de Pulsos Antihorario:%d\n",
-					ls.pcCounterClockWise);
+			//ls.pcCounterClockWise++;
+			linearSensorIncreasePulsesCounterClockWise (&ls);
+			printf("Cantidad de Pulsos Antihorario:%d\n",linearSensorGetPulsesCounterClockWise(& ls));
 			break;
 		default: // llamar a una función de error
 			break;
@@ -50,9 +52,10 @@ void linearSensorInit(linearSensor_t* ls, uint32_t pcCounterClockWise,
 
 void linearSensorSetPosition(linearSensor_t* ls, stepperMotor_t* stepper) {
 	//controlo que el eje del motor
-	if (stepper->isEnable == STEPPER_AXIS_LAST_MOVE) {
-		printf("Cantidad de Pulsos Horario:%d\n", ls->pcClockwise);
-		printf("Cantidad de Pulsos Antihorario:%d\n", ls->pcCounterClockWise);
+	if (stepper->isMoveAxis == STEPPER_AXIS_LAST_MOVE) {
+		printf("Entro en LinearSensorSetPosition......\n");
+		//printf("Cantidad de Pulsos Horario:%d\n", ls->pcClockwise);
+		//printf("Cantidad de Pulsos Antihorario:%d\n", ls->pcCounterClockWise);
 		/*if (ls->pcHorario > ls->pcAntihorario)
 		 ls->position = ls->distancePerPulse
 		 * (ls->pcHorario - ls->pcAntihorario);
@@ -79,3 +82,21 @@ void linearSensorSetDistancePerPulse(linearSensor_t* ls, float dPerPulse) {
 float linearSensorGetDistancePerPulse(linearSensor_t* ls) {
 	return ls->distancePerPulse;
 }
+
+uint32_t linearSensorGetPulsesClockWise(linearSensor_t* ls){
+	return ls->pcClockwise;
+
+}
+
+uint32_t linearSensorGetPulsesCounterClockWise(linearSensor_t* ls){
+	return ls->pcCounterClockWise;
+}
+
+void linearSensorIncreaseClockWisePulses(linearSensor_t* ls){
+	ls->pcClockwise++;
+}
+
+void linearSensorIncreasePulsesCounterClockWise (linearSensor_t*ls){
+	ls->pcCounterClockWise++;
+}
+

@@ -8,8 +8,8 @@
 #define PORT2  2 //corresponde al GPIO LCD2
 #define PIN5   5 //corresponde al GPIO LCD2
 
-#define PORT3  3
-#define PIN6   6
+#define PORT3  3 //corresponde al GPIO6
+#define PIN6   6 //corresponde al GPIO6
 
 #define PORT0  0 //corresponde a la TEC 1
 #define PIN4   4 //corresponde a la TEC 1
@@ -24,7 +24,7 @@ typedef struct{
 
 }linearSensor_t;
 
- linearSensor_t ls;
+linearSensor_t ls;
 
 //esta función configura el input capture
 void configInterruptIRQ(void);
@@ -45,9 +45,15 @@ void linearSensorSetDistancePerPulse(linearSensor_t* ls, float dPerPulse);
 float linearSensorGetDistancePerPulse(linearSensor_t* ls);
 
 // esta función retorna el valor de los pulsos que se contaron en sentido horario
-uint32_t linearSensorGetPulsosClockwise(linearSensor_t* ls);
+uint32_t linearSensorGetPulsesClockWise(linearSensor_t* ls);
 
 // esta función retorna el valor de los pulsos que se contaron en sentido Antihorario
-uint32_t linearSensorGetCounterClockWise(linearSensor_t* ls);
+uint32_t linearSensorGetPulsesCounterClockWise(linearSensor_t* ls);
+
+//esta función permite incrementar en uno los pulsos correspondiente al sentido horario
+void linearSensorIncreaseClockWisePulses(linearSensor_t* ls);
+
+//esta función permite incrementar en uno los pulsos correspondiente al sentido antihorario
+void linearSensorIncreasePulsesCounterClockWise (linearSensor_t*ls);
 
 #endif

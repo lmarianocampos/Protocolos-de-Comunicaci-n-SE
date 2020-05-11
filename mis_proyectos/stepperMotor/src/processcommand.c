@@ -163,3 +163,4 @@ void processCommandSetMicroSteps(stepperMotorMicroSteps_t microSteps){
 void processCommandInvalid(stateCommand_t sCommand){
 	if(sCommand==COMMAND_INVALID) printf("Se recibio un comando Invalido\n");
 }
+

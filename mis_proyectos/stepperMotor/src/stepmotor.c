@@ -1,18 +1,22 @@
 #include "stepmotor.h"
 //uint32_t pulseCount = 0;
 
+/******interrupciones del timer********/
 static void stepperMotorCycle() {
 
 	if (pulseCount != 0) {
 		gpioWrite(stepper.pulsePin, ON);
 		pulseCount--;
-	}else{
+							//establezco que elestado deleje del motor tuvo un movimiento reciente y
+							//se debe realizar el calculo de la posición de la compuerta
 		if(pulseCount == 0) stepper.isMoveAxis = STEPPER_AXIS_LAST_MOVE;
 	}
 }
 static void stepperMotorDutyCycle() {
 	gpioWrite(stepper.pulsePin, OFF);
 }
+
+/**************Funciones correspondientes a la API's del Motor*********************/
 void stepperMotorInit(stepperMotor_t *stepper, uint32_t stepsPerRevolution,
 		gpioMap_t pulsePin,gpioMap_t directionPin, gpioMap_t enablePin, gpioMap_t microStepsM0Pin,
 		gpioMap_t microStepsM1Pin, gpioMap_t microStepsM2Pin, float stepAngle) {
@@ -87,7 +91,10 @@ stepperMotorEnable_t stepperMotorGetEnable(stepperMotor_t *stepper) {
 void stepperMotorMoveSteps(stepperMotor_t *stepper, uint32_t numberOfSteps) {
 	//Controlar que los numeros de pulsos no superen los limites
 	if (stepper->isEnable == STEPPER_ENABLE){
+		//TODO aqui puedo configurary habilitar las interrupciones del timer cada vez que se reciba el comando para gernerarla señal de tren de pulsos
+
 		pulseCount = numberOfSteps;
+		//establezo el estado del eje  del motor a que esta en movimiento
 		stepper->isMoveAxis= STEPPER_AXIS_IN_MOVE;
 	}else{
 		if(stepper->isEnable == STEPPER_DISABLE) printf("Motor Inhabilitado. \n");
