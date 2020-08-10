@@ -5,18 +5,17 @@
          (example: BSD-3-Clause <https://opensource.org/licenses/BSD-3-Clause>)
  *
  * Version: 1.0.0
- * Creation Date: 2020/05/09
+ * Creation Date: 2020/07/1
  */
 
 /*=====[Avoid multiple inclusion - begin]====================================*/
 
-#ifndef _DEBOUNCE_H_
-#define _DEBOUNCE_H_
+#ifndef _COMMANDPROCESSING_H_
+#define _COMMANDPROCESSING_H_
 
 /*=====[Inclusions of public function dependencies]==========================*/
-
 #include "sapi.h"
-#include  "linearsensor.h"
+#include "bibliotecasfreeRTOS.h"
 
 /*=====[C++ - begin]=========================================================*/
 
@@ -25,37 +24,18 @@ extern "C" {
 #endif
 
 /*=====[Definition macros of public constants]===============================*/
-
-#define CUARENTAMS  40
+//Tamaño de la cola que enviará puntero
+#define SIZECOMMANDQUEUE 100
 /*=====[Public function-like macros]=========================================*/
-
-//#define printInt(printer,number) printIntFormat((printer),(number),(DEC_FORMAT))
-
-//#define printlnString(printer,string);   {printString((printer),(string));\
-                                          printEnter((printer));}
-
 /*=====[Definitions of public data types]====================================*/
-//typedef uint8_t bool_t;
-
-typedef enum {
-		 STATE_PULSE_UP,
-		 STATE_PULSE_DOWN,
-		 STATE_PULSE_FALLING,
-		 STATE_PULSE_RISING
-} fsmPulseState_t;
-
-typedef struct {
-	gpioMap_t inputPulse;
-	fsmPulseState_t state;
-	delay_t delay;
-}dbn_t;
-dbn_t debounce;
+QueueHandle_t processingComandQueue;
 
 /*=====[Prototypes (declarations) of public functions]=======================*/
-
-void fsmPulseError( dbn_t* debounce);
-void fsmPulseInit( dbn_t* debounce,gpioMap_t inputPulse);
-void fsmPulseUpdate( dbn_t* debounce);
+//task
+void commandProcessingQueueCreate(void);
+uint16_t commandProcessingConverterCaracterToDecimal(char * pointer, uint8_t length);
+//esta tarea realiza el procesamiento o identifica qué comando se recibio para lego llamar a una función de la API del motor PaP
+void commandProcessingTask(void * taskParmPtr);
 /*=====[Prototypes (declarations) of public interrupt functions]=============*/
 
 
@@ -68,4 +48,4 @@ void fsmPulseUpdate( dbn_t* debounce);
 
 /*=====[Avoid multiple inclusion - end]======================================*/
 
-#endif /* _DEBOUNCE_H_ */
+#endif /* _COMMANDPROCESSING_H_ */

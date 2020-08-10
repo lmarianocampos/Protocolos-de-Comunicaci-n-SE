@@ -18,7 +18,7 @@ typedef struct{
 	  			delay_t delay;
 	  	  	  	}dbn_t;
 
-fsmButtonState_t fsmButtonState;
+//fsmButtonState_t fsmButtonState;
 dbn_t vectorTeclas[CANTIDAD_TECLAS];
 
 void fsmButtonError( void );

@@ -46,7 +46,7 @@ void fsmPulseUpdate(dbn_t* debounce) {
 
 	static bool_t flagFalling = FALSE;
 	static bool_t flagRising = FALSE;
-	static uint32_t counterPulse = 0;;
+	//static uint32_t counterPulse = 0;;
 
 	switch (debounce->state) {
 	case STATE_PULSE_UP:
@@ -61,7 +61,7 @@ void fsmPulseUpdate(dbn_t* debounce) {
 		break;
 	case STATE_PULSE_FALLING:
 		if (flagFalling == FALSE) {
-			delayConfig(&(debounce->delay), 40);
+			delayConfig(&(debounce->delay), CUARENTAMS);
 			flagFalling = TRUE;
 		}
 		if (delayRead(&(debounce->delay))) {
@@ -70,6 +70,7 @@ void fsmPulseUpdate(dbn_t* debounce) {
 			} else {
 				if (!gpioRead(debounce->inputPulse)) {
 					debounce->state = STATE_PULSE_DOWN; // Se puso en bajo la señal
+														//fue un flanco descendente
 				}
 			}
 			flagFalling = FALSE;
@@ -77,14 +78,30 @@ void fsmPulseUpdate(dbn_t* debounce) {
 		break;
 	case STATE_PULSE_RISING:
 		if (flagRising == FALSE) {
-			delayConfig(&(debounce->delay), 40);
+			delayConfig(&(debounce->delay),CUARENTAMS);
 			flagRising = TRUE;
 		}
 		if (delayRead(&(debounce->delay))) {
 			if (gpioRead(debounce->inputPulse)) {
 				debounce->state = STATE_PULSE_UP; // se caputro un flanco ascendente
-				counterPulse++;
-				printf("Pulso:%d\n",counterPulse);
+				switch (stepper.direction) {
+						case STEPPER_RIGHT_OPEN:
+							linearSensorIncreaseClockWisePulses(&ls);
+
+							//ls.pcClockwise++;
+							printf("Cantidad de Pulsos Horario:%d\n",linearSensorGetPulsesClockWise(& ls));
+
+							break;
+						case STEPPER_LEFT_CLOSE:
+							//ls.pcCounterClockWise++;
+							linearSensorIncreasePulsesCounterClockWise (&ls);
+							printf("Cantidad de Pulsos Antihorario:%d\n",linearSensorGetPulsesCounterClockWise(& ls));
+							break;
+						default: // llamar a una función de error
+							break;
+						}
+				//counterPulse++;
+				//printf("Pulso:%d\n",counterPulse);
 			} else {
 				if (!gpioRead(debounce->inputPulse)) {
 					debounce->state = STATE_PULSE_DOWN;   // fue un rebote

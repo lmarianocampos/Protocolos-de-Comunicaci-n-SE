@@ -8,9 +8,9 @@ BOARD = edu_ciaa_nxp
 # -------- Program path and name default values ------------------------
 # Program path
 # relative to this folder, leave void if the program is in this folder
-PROGRAM_PATH = mis_proyectos#examples/c/sapi/bluetooth#mis_proyectos/cese_rtosII #examples/c/sapi/#--examples/c/sapi/uart --mis_proyectos/cese_rtosII
+PROGRAM_PATH = mis_proyectos#/cese_rtosII#mis_proyectos #examples/c/sapi/#--examples/c/sapi/uart --mis_proyectos/cese_rtosII
 # Program name
-PROGRAM_NAME = stepperMotor# hm10_uart_bridge# freeRTOS_TP#hcsr04_ultrasonic_sensor#--tx_rx_interrupt_bridge--#freeRTOS_TP
+PROGRAM_NAME =	adc#stepperMotor#firmware_tpfinal#firmware_tpfinal  ## hm10_uart_bridge# freeRTOS_TP#--tx_rx_interrupt_bridge--#freeRTOS_TP
 # -------- Program path and name from an external projec.mk file -------
 -include program.mk
 # Compose program path and name

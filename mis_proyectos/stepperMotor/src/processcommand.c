@@ -78,11 +78,11 @@ void processCommandBufferAux(void) {
 					//establece el sentido de dirección horario y antihorario.
 					switch (*(bufferAux + 2)) {
 					case 'A':
-						stepperMotorSetDirection(&stepper, STEPPER_LEFT);
+						stepperMotorSetDirection(&stepper, STEPPER_RIGHT_OPEN);
 						processCommandInvalid(COMMAND_VALID);
 						break;
 					case 'H':
-						stepperMotorSetDirection(&stepper, STEPPER_RIGHT);
+						stepperMotorSetDirection(&stepper, STEPPER_LEFT_CLOSE);
 						processCommandInvalid(COMMAND_VALID);
 						break;
 					default:processCommandInvalid(COMMAND_INVALID);
@@ -90,6 +90,7 @@ void processCommandBufferAux(void) {
 					}
 				break;
 			case 'S': //establece la cantidad de pasos.
+				//TODO verificar eque cuando mando MSSH quiere ejecutar este comanto CORREGIR
 				stepperMotorMoveSteps(&stepper, processCommandConverterCaracterToDecimal(bufferAux+2, 4));
 				processCommandInvalid(COMMAND_VALID);
 

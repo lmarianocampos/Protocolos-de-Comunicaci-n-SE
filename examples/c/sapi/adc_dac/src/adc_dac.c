@@ -95,7 +95,7 @@ int main(void){
 
    /* Inicializar UART_USB a 115200 baudios */
    uartConfig( UART_USB, 115200 );
-
+   printf("Inicia programa\n");
    /* Inicializar AnalogIO */
    /* Posibles configuraciones:
     *    ADC_ENABLE,  ADC_DISABLE,
@@ -122,7 +122,7 @@ int main(void){
 
    /* Inicializar Retardo no bloqueante con tiempo en ms */
    delayConfig( &delay1, 500 );
-   delayConfig( &delay2, 200 );
+   delayConfig( &delay2, 1000 );//200
 
    /* ------------- REPETIR POR SIEMPRE ------------- */
    while(1) {
@@ -131,6 +131,7 @@ int main(void){
       if ( delayRead( &delay1 ) ){
 
          /* Leo la Entrada Analogica AI0 - ADC0 CH1 */
+
          muestra = adcRead( CH1 );
 
          /* Envío la primer parte del mnesaje a la Uart */

@@ -65,7 +65,7 @@ typedef struct {
 } ultrasonicSensorIrqInit_t;
 
 typedef struct {
-   ultrasonicSensorMap_t ultrasonicSensor; /* Sensor ID */
+   ultrasonicSensorMap_t ultrasonicSensor;  /* Sensor ID */
    uint32_t echoRiseTime,					/* Ticks of echo pulse rise edge */
             echoFallTime,					/* Ticks of echo pulse fall edge */
             lastEchoWidth;					/* Echo pulse width in ticks */

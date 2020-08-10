@@ -18,9 +18,7 @@ typedef struct{
 
 	uint32_t pcClockwise;
 	uint32_t pcCounterClockWise;
-	float position; //va estar en cm
-	//es la distancia que se mueve el filo de la compuerta al girar un paso el eje del motor PaP
-	float distancePerPulse; //va estar en cm
+	float anglePosition; //va estar en grados
 
 }linearSensor_t;
 
@@ -30,16 +28,16 @@ linearSensor_t ls;
 void configInterruptIRQ(void);
 
 // inicia el el objeto sensor lineal
-void linearSensorInit(linearSensor_t* ls,uint32_t pcAntihorario,uint32_t pcHorario,float position,float dPerPulse);
+void linearSensorInit(linearSensor_t* ls,uint32_t pcAntihorario,uint32_t pcHorario,float position);
 
-//esta función establece la posición correspondiente al filo de la compuerta
+// esta función establece la posición correspondiente al filo de la compuerta
 void linearSensorSetPosition(linearSensor_t* ls,stepperMotor_t* stepper);
 
-//esta función devuelve la posición del filo de la compuerta
+// esta función devuelve la posición del filo de la compuerta
 uint32_t linearSensorGetPosition(linearSensor_t* ls);
 
 // esta función establece la disctancia que que recorre el filo de la compuerta al girar un paso el eje del Motor PaP
-void linearSensorSetDistancePerPulse(linearSensor_t* ls, float dPerPulse);
+//void linearSensorSetDistancePerPulse(linearSensor_t* ls, float dPerStep);
 
 //esta función retorna la distancia por pulso
 float linearSensorGetDistancePerPulse(linearSensor_t* ls);
@@ -50,10 +48,10 @@ uint32_t linearSensorGetPulsesClockWise(linearSensor_t* ls);
 // esta función retorna el valor de los pulsos que se contaron en sentido Antihorario
 uint32_t linearSensorGetPulsesCounterClockWise(linearSensor_t* ls);
 
-//esta función permite incrementar en uno los pulsos correspondiente al sentido horario
+// esta función permite incrementar en uno los pulsos correspondiente al sentido horario
 void linearSensorIncreaseClockWisePulses(linearSensor_t* ls);
 
-//esta función permite incrementar en uno los pulsos correspondiente al sentido antihorario
+// esta función permite incrementar en uno los pulsos correspondiente al sentido antihorario
 void linearSensorIncreasePulsesCounterClockWise (linearSensor_t*ls);
 
 #endif
